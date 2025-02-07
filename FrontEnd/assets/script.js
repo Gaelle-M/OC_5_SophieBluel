@@ -12,6 +12,8 @@ const openModal = function (e) {
   modal
     .querySelector(".js-modal-stop")
     .addEventListener("click", stopPropagation);
+
+    
 };
 const closeModal = function (e) {
   if (modal === null) return;
@@ -263,30 +265,42 @@ function addPhotoToGallery(photo) {
 // Gestion du formulaire d'ajout de photo
 document.getElementById("add-photo-form").addEventListener("submit", async function (e) {
   e.preventDefault();
+
   const formData = new FormData();
   formData.append("image", document.getElementById("image").files[0]);
   formData.append("title", document.getElementById("title").value);
   formData.append("category", document.getElementById("category").value);
+
   const token = sessionStorage.getItem("authToken");
   if (!token) {
     alert("Vous devez être connecté pour ajouter une photo.");
     return;
   }
+
   try {
     const response = await fetch("http://localhost:5678/api/works", {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       body: formData,
     });
+
     if (!response.ok) throw new Error(`Erreur : ${response.status}`);
+
     const newPhoto = await response.json();
     console.log("Nouvelle photo ajoutée :", newPhoto);
+
+    // Ajouter la nouvelle photo dynamiquement
     addPhotoToGallery(newPhoto);
-   
+    addPhotoToModal(newPhoto);
+
+    // Vider et mettre à jour la galerie modale
+    const works = await fetchWorks();
+    displayModalGallery(works);
+
     // Vider le formulaire
     document.getElementById("add-photo-form").reset();
-    // Désactiver le bouton après soumission
     document.querySelector("button[type='submit']").disabled = true;
+
     // Fermer la modale
     closeModal(e);
   } catch (error) {
@@ -294,6 +308,7 @@ document.getElementById("add-photo-form").addEventListener("submit", async funct
     alert("Impossible d'ajouter la photo.");
   }
 });
+
 
 function addPhotoToModal(photo) {
   const modalGallery = document.querySelector(".container-photo"); // Assure-toi que la galerie de la modale a bien cette classe
@@ -368,7 +383,7 @@ imageInput.addEventListener("change", function (e) {
     previewImg.classList.add("preview-img");
     // Vous pouvez personnaliser le style via CSS ou directement ici
     previewImg.style.maxWidth = "100%";
-    previewImg.style.maxHeight = "150px";
+    previewImg.style.maxHeight = "169px";
     previewImg.style.display = "block";
     previewImg.style.margin = "auto";
     ajoutPhotoDiv.appendChild(previewImg);
