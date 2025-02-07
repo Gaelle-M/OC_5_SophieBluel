@@ -515,8 +515,11 @@ document.getElementById("open-add-photo-modal").addEventListener("click", (e) =>
     openFirstModal();
   });
 });
-
 //FIN DE FERMETURE ****************
+
+//CONNEXION
+
+
 document.addEventListener("DOMContentLoaded", async () => {
   const works = await fetchWorks();
   if (works) {
