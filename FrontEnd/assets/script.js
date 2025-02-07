@@ -344,8 +344,45 @@ document.getElementById("open-add-photo-modal").addEventListener("click", (e) =>
   modal.addEventListener("click", closeModal);
   modal.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
 });
+
 // REMPLACEMENT ICONE IMAGE AJOUT PHOTO***********
 
+const imageInput = document.getElementById("image");
+
+imageInput.addEventListener("change", function (e) {
+  // Sélectionner la div contenant l'ajout de photo
+  const ajoutPhotoDiv = document.querySelector(".ajout-photo");
+
+  // Masquer l'icône, le label et le paragraphe, tout en gardant l'input
+  // On suppose que l'input possède l'id "image"
+  Array.from(ajoutPhotoDiv.children).forEach(child => {
+    if (child.id !== "image" && !child.classList.contains("preview-img")) {
+      child.style.display = "none";
+    }
+  });
+
+  // Créer ou mettre à jour l'image de prévisualisation
+  let previewImg = ajoutPhotoDiv.querySelector(".preview-img");
+  if (!previewImg) {
+    previewImg = document.createElement("img");
+    previewImg.classList.add("preview-img");
+    // Vous pouvez personnaliser le style via CSS ou directement ici
+    previewImg.style.maxWidth = "100%";
+    previewImg.style.maxHeight = "150px";
+    previewImg.style.display = "block";
+    previewImg.style.margin = "auto";
+    ajoutPhotoDiv.appendChild(previewImg);
+  }
+
+  const file = this.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      previewImg.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
 
 
 //FIN DU REMPLECEMENT**********
