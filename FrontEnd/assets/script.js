@@ -15,23 +15,80 @@ const openModal = function (e) {
 
     
 };
+// Fonction générique pour fermer une modale
 const closeModal = function (e) {
   if (modal === null) return;
   e.preventDefault();
-  document.querySelector(".js-modal").focus();
+
+  // Si c'est la modal d'ajout, supprimer l'aperçu
+  if (modal.id === "modal2") {
+    removePreviewImage();
+  }
+
+  // Donner le focus à la modale courante (plutôt que d'utiliser document.querySelector)
+  modal.focus();
+  
   modal.style.display = "none";
   modal.setAttribute("inert", "true");
   modal.setAttribute("aria-hidden", "true");
   modal.removeAttribute("aria-modal");
+  
+  // Suppression des écouteurs attachés
   modal.removeEventListener("click", closeModal);
-  modal
-    .querySelector(".js-modal-close")
-    .removeEventListener("click", closeModal);
-  modal
-    .querySelector(".js-modal-stop")
-    .removeEventListener("click", stopPropagation);
+  modal.querySelector(".js-modal-close").removeEventListener("click", closeModal);
+  modal.querySelector(".js-modal-stop").removeEventListener("click", stopPropagation);
+  
   modal = null;
 };
+
+// Suppression de l'aperçu de l'image dans la modal d'ajout
+function removePreviewImage() {
+  const ajoutPhotoDiv = document.querySelector(".ajout-photo");
+  if (ajoutPhotoDiv) {
+    const previewImg = ajoutPhotoDiv.querySelector(".preview-img");
+    if (previewImg) {
+      previewImg.remove();
+    }
+    // Réafficher les autres éléments qui avaient été masqués
+    Array.from(ajoutPhotoDiv.children).forEach(child => {
+      if (child.id !== "image") {
+        child.style.display = "";
+      }
+    });
+  }
+}
+
+// Un seul écouteur pour ouvrir la modal d'ajout (modal2)
+document.getElementById("open-add-photo-modal").addEventListener("click", (e) => {
+  e.preventDefault();
+  
+  // Fermer la modal en cours (si nécessaire)
+  if (modal) closeModal(e);
+  
+  // Ouvrir la modal2
+  modal = document.getElementById("modal2");
+  modal.style.display = null;
+  modal.removeAttribute("inert");
+  modal.removeAttribute("aria-hidden");
+  modal.setAttribute("aria-modal", "true");
+  
+  // Attacher les écouteurs pour fermer la modal2
+  modal.querySelector(".js-modal-close").addEventListener("click", closeModal);
+  modal.addEventListener("click", closeModal);
+  modal.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
+  
+  // Par exemple, gestion du bouton "précédent"
+  const previousBtn = modal.querySelector(".modal-previous");
+  if (previousBtn) {
+    previousBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      closeModal(e);
+      openFirstModal();
+    });
+  }
+});
+
+
 const stopPropagation = function (e) {
   e.stopPropagation();
 };
@@ -300,6 +357,7 @@ document.getElementById("add-photo-form").addEventListener("submit", async funct
     // Vider le formulaire
     document.getElementById("add-photo-form").reset();
     document.querySelector("button[type='submit']").disabled = true;
+  
 
     // Fermer la modale
     closeModal(e);
