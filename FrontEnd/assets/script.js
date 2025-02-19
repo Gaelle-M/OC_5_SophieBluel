@@ -15,25 +15,20 @@ const openModal = function (e) {
 
     
 };
-// Fonction générique pour fermer une modale
+
 const closeModal = function (e) {
   if (modal === null) return;
   e.preventDefault();
 
-  // Si c'est la modal d'ajout, supprimer l'aperçu
   if (modal.id === "modal2") {
     removePreviewImage();
   }
-
-  // Donner le focus à la modale courante (plutôt que d'utiliser document.querySelector)
   modal.focus();
   
   modal.style.display = "none";
   modal.setAttribute("inert", "true");
   modal.setAttribute("aria-hidden", "true");
   modal.removeAttribute("aria-modal");
-  
-  // Suppression des écouteurs attachés
   modal.removeEventListener("click", closeModal);
   modal.querySelector(".js-modal-close").removeEventListener("click", closeModal);
   modal.querySelector(".js-modal-stop").removeEventListener("click", stopPropagation);
@@ -41,7 +36,7 @@ const closeModal = function (e) {
   modal = null;
 };
 
-// Suppression de l'aperçu de l'image dans la modal d'ajout
+
 function removePreviewImage() {
   const ajoutPhotoDiv = document.querySelector(".ajout-photo");
   if (ajoutPhotoDiv) {
@@ -49,7 +44,7 @@ function removePreviewImage() {
     if (previewImg) {
       previewImg.remove();
     }
-    // Réafficher les autres éléments qui avaient été masqués
+    
     Array.from(ajoutPhotoDiv.children).forEach(child => {
       if (child.id !== "image") {
         child.style.display = "";
@@ -58,26 +53,24 @@ function removePreviewImage() {
   }
 }
 
-// Un seul écouteur pour ouvrir la modal d'ajout (modal2)
+
 document.getElementById("open-add-photo-modal").addEventListener("click", (e) => {
   e.preventDefault();
   
-  // Fermer la modal en cours (si nécessaire)
+ 
   if (modal) closeModal(e);
   
-  // Ouvrir la modal2
   modal = document.getElementById("modal2");
   modal.style.display = null;
   modal.removeAttribute("inert");
   modal.removeAttribute("aria-hidden");
   modal.setAttribute("aria-modal", "true");
   
-  // Attacher les écouteurs pour fermer la modal2
+  
   modal.querySelector(".js-modal-close").addEventListener("click", closeModal);
   modal.addEventListener("click", closeModal);
   modal.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
   
-  // Par exemple, gestion du bouton "précédent"
   const previousBtn = modal.querySelector(".modal-previous");
   if (previousBtn) {
     previousBtn.addEventListener("click", function (e) {
@@ -100,7 +93,7 @@ window.addEventListener("keydown", function (e) {
     closeModal(e);
   }
 });
-// Récupère les travaux dans l'API
+
 async function fetchWorks() {
   try {
     const response = await fetch("http://localhost:5678/api/works");
@@ -159,7 +152,7 @@ function displayModalGallery(works) {
     img.src = work.imageUrl;
     img.alt = work.title;
     figure.appendChild(img);
-    // Ajout du bouton poubelle
+    
     const deleteButton = document.createElement("button-trash");
     deleteButton.classList.add("delete-photo");
     deleteButton.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
@@ -191,12 +184,12 @@ async function deletePhoto(photoId) {
     if (!response.ok) {
       throw new Error(`Erreur : ${response.status}`);
     }
-    // Suppression dans la modal
+    
     const modalFigure = document.querySelector(`.container-photo figure[data-id="${photoId}"]`);
     if (modalFigure) {
       modalFigure.remove();
     }
-    // Suppression dans la galerie principale
+    
     const galleryFigure = document.querySelector(`.gallery figure[data-id="${photoId}"]`);
     if (galleryFigure) {
       galleryFigure.remove();
@@ -219,7 +212,7 @@ function displayCategories(categories) {
     return;
   }
   categoryContainer.innerHTML = "";
-  // Bouton "tous"
+
   const allCategoriesButton = document.createElement("button");
   allCategoriesButton.textContent = "Tous";
   allCategoriesButton.classList.add("category-button");
@@ -233,7 +226,7 @@ function displayCategories(categories) {
     filterGalleryByCategory(0, event.target);
   });
   categoryContainer.appendChild(allCategoriesButton);
-  // Les autres boutons
+
   categories.forEach((category) => {
     const categoryElement = document.createElement("button");
     categoryElement.textContent = category.name;
@@ -249,7 +242,7 @@ function displayCategories(categories) {
     categoryContainer.appendChild(categoryElement);
   });
 }
-// Fonction pour filtrer les images par catégorie
+
 function filterGalleryByCategory(categoryId) {
   fetchWorks().then((works) => {
     const filteredWorks =
@@ -259,7 +252,7 @@ function filterGalleryByCategory(categoryId) {
     displayGallery(filteredWorks);
   });
 }
-// Fonction pour remplir le select des catégories dans la modal d'ajout de photo
+
 function populateCategorySelect(categories) {
   const categorySelect = document.getElementById("category");
   categorySelect.innerHTML = "";
@@ -289,19 +282,17 @@ function validateForm() {
   const title = document.getElementById("title");
   const category = document.getElementById("category");
   const submitButton = document.querySelector("button[type='submit']");
-  // Vérifier si tous les champs sont remplis
   const isValid = image.files.length > 0 && title.value.trim() !== "" && category.value !== "";
-  // Activer/désactiver le bouton et changer la couleur
+  
   submitButton.disabled = !isValid;
 }
 document.getElementById("image").addEventListener("change", validateForm);
 document.getElementById("title").addEventListener("input", validateForm);
 document.getElementById("category").addEventListener("change", validateForm);
-// Ajoute les écouteurs d'événements aux champs
 ["image", "title", "category"].forEach(id => {
   document.getElementById(id).addEventListener("input", validateForm);
 });
-// Fonction pour ajouter une photo à la galerie
+
 function addPhotoToGallery(photo) {
   const gallery = document.querySelector(".gallery");
   if (!gallery) return console.error("Galerie introuvable.");
@@ -319,7 +310,7 @@ function addPhotoToGallery(photo) {
   figure.appendChild(figcaption);
   gallery.appendChild(figure);
 }
-// Gestion du formulaire d'ajout de photo
+
 document.getElementById("add-photo-form").addEventListener("submit", async function (e) {
   e.preventDefault();
 
@@ -346,7 +337,6 @@ document.getElementById("add-photo-form").addEventListener("submit", async funct
     const newPhoto = await response.json();
     console.log("Nouvelle photo ajoutée :", newPhoto);
 
-    // Ajouter la nouvelle photo dynamiquement
     addPhotoToGallery(newPhoto);
     addPhotoToModal(newPhoto);
 
@@ -354,7 +344,6 @@ document.getElementById("add-photo-form").addEventListener("submit", async funct
     const works = await fetchWorks();
     displayModalGallery(works);
 
-    // Vider le formulaire
     document.getElementById("add-photo-form").reset();
     document.querySelector("button[type='submit']").disabled = true;
   
@@ -369,7 +358,7 @@ document.getElementById("add-photo-form").addEventListener("submit", async funct
 
 
 function addPhotoToModal(photo) {
-  const modalGallery = document.querySelector(".container-photo"); // Assure-toi que la galerie de la modale a bien cette classe
+  const modalGallery = document.querySelector(".container-photo"); 
   if (!modalGallery) return console.error("Galerie de la modale introuvable.");
   const figure = document.createElement("figure");
   const img = document.createElement("img");
@@ -397,22 +386,21 @@ function addPhotoToModal(photo) {
   modalGallery.appendChild(figure);
 }
 
-// Gestion de la première modal
+
 document.querySelectorAll(".js-modal").forEach((a) => {
   a.addEventListener("click", openModal);
 });
-// Gestion de la seconde modal
+
 document.getElementById("open-add-photo-modal").addEventListener("click", (e) => {
   e.preventDefault();
-  // Fermer la première modal
+ 
   closeModal(e);
-  // Ouvrir la seconde modal
+
   modal = document.getElementById("modal2");
   modal.style.display = null;
   modal.removeAttribute("inert");
   modal.removeAttribute("aria-hidden");
   modal.setAttribute("aria-modal", "true");
-  // Attacher l'événement pour fermer la seconde modal
   modal.querySelector(".js-modal-close").addEventListener("click", closeModal);
   modal.addEventListener("click", closeModal);
   modal.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
@@ -423,11 +411,9 @@ document.getElementById("open-add-photo-modal").addEventListener("click", (e) =>
 const imageInput = document.getElementById("image");
 
 imageInput.addEventListener("change", function (e) {
-  // Sélectionner la div contenant l'ajout de photo
+  
   const ajoutPhotoDiv = document.querySelector(".ajout-photo");
 
-  // Masquer l'icône, le label et le paragraphe, tout en gardant l'input
-  // On suppose que l'input possède l'id "image"
   Array.from(ajoutPhotoDiv.children).forEach(child => {
     if (child.id !== "image" && !child.classList.contains("preview-img")) {
       child.style.display = "none";
@@ -439,7 +425,6 @@ imageInput.addEventListener("change", function (e) {
   if (!previewImg) {
     previewImg = document.createElement("img");
     previewImg.classList.add("preview-img");
-    // Vous pouvez personnaliser le style via CSS ou directement ici
     previewImg.style.maxWidth = "100%";
     previewImg.style.maxHeight = "169px";
     previewImg.style.display = "block";
@@ -461,7 +446,6 @@ imageInput.addEventListener("change", function (e) {
 //FIN DU REMPLECEMENT**********
 
 //FERMER MODALE 2 => MODALE 1***********
-// Fonction pour fermer la modale courante (modal2)
 function closeCurrentModal() {
   if (modal) {
     modal.style.display = "none";
@@ -476,7 +460,7 @@ function closeCurrentModal() {
   }
 }
 
-// Fonction pour ouvrir la première modale (modal1)
+// Fonction pour ouvrir la première modale 
 function openFirstModal() {
   const modal1 = document.getElementById("modal1");
   if (modal1) {
@@ -496,7 +480,7 @@ document.getElementById("open-add-photo-modal").addEventListener("click", (e) =>
 
   closeModal(e);
   
-  // Ouvrir la seconde modale (modal2)
+  // Ouvrir la seconde modale 
   modal = document.getElementById("modal2");
   modal.style.display = null;
   modal.removeAttribute("inert");
@@ -516,8 +500,6 @@ document.getElementById("open-add-photo-modal").addEventListener("click", (e) =>
   });
 });
 //FIN DE FERMETURE ****************
-
-//CONNEXION
 
 
 document.addEventListener("DOMContentLoaded", async () => {

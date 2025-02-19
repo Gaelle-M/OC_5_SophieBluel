@@ -1,14 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Fonction pour récupérer le token
     function getAuthToken() {
       return sessionStorage.getItem("authToken");
     }
   
-    // Mise à jour de l'interface en fonction du token (pour les éléments présents sur la page)
     function updateUIBasedOnAuth() {
       const token = getAuthToken();
   
-      // Modification du lien de connexion/déconnexion, s'il existe
       const authLink = document.getElementById("auth-link");
       if (authLink) {
         if (token) {
@@ -25,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
   
-      // Modification d'autres éléments selon le token, s'ils existent
       const editLink = document.getElementById("edit-link");
       if (editLink) {
         editLink.style.display = token ? "inline-block" : "none";
@@ -40,10 +36,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   
-    // Exécuter la mise à jour de l'UI dès que le DOM est prêt
     updateUIBasedOnAuth();
   
-    // Si un token est présent, créer et afficher la bannière "Mode édition"
     const token = getAuthToken();
     if (token) {
       let editModeBanner = document.getElementById("edit-mode-banner");
@@ -70,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
       editModeBanner.style.display = "flex";
     }
   
-    // Gestion du formulaire de connexion (s'exécute seulement si le formulaire est présent)
     const loginForm = document.querySelector(".form-login");
     if (loginForm) {
       loginForm.addEventListener("submit", async function (event) {
